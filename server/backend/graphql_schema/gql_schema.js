@@ -9,9 +9,9 @@ const {
  } = graphql
 
 const books=[
-    {name:'Sherlock Holmes',genre:'Mystery Thriller',id:'1'},
-    {name:'Alchemist',genre:'Fiction',id:'2'},
-    {name:'The Long Earth',genre:'Science Fiction',id:'3'}
+    {name:'Sherlock Holmes',genre:'Mystery Thriller',id:'1',authorId:'3'},
+    {name:'Alchemist',genre:'Fiction',id:'2',authorId:'2'},
+    {name:'The Long Earth',genre:'Science Fiction',id:'3',authorId:'2'}
 ]
 const authors=[
     {name:'Patrick Rothfuss',age:44,id:'1'},
@@ -23,22 +23,30 @@ const SchemaProvider = () => {
         
     })
 } 
-const BookType = new GraphQLObjectType({
-    name:'Book',
-    fields:{
-        id:{ type:GraphQLID },
-        name:{ type: GraphQLString },
-        genre:{ type:GraphQLString }
-    }
-})
 const AuthorType = new GraphQLObjectType({
     name:'Author',
     fields:{
         id:{ type:GraphQLID },
         name:{ type: GraphQLString },
-        age:{ type:GraphQLInt }
+        age:{ type:GraphQLInt },
     }
 })
+const BookType = new GraphQLObjectType({
+    name:'Book',
+    fields:{
+        id:{ type:GraphQLID },
+        name:{ type: GraphQLString },
+        genre:{ type:GraphQLString },
+        author:{
+            type:AuthorType,
+            resolve(parent,args){
+                console.log(parent)
+                return _.find(authors,{id:parent.authorId})
+            }
+        }
+    }
+})
+
 const RootQuery = new GraphQLObjectType({
     name:'RootQueryType',
     fields:{
